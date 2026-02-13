@@ -1,5 +1,7 @@
 {
-  "name": "SecuLearn - Cybersecurity Analysis Simulator",
+  "name": "Anaconda - Cybersecurity Analysis Simulator",
   "description": "An educational platform designed to simulate network enumeration, vulnerability discovery, and security analysis. Learn about port scanning (TCP/UDP), directory enumeration, and exploit theory through an interactive AI-powered dashboard.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "geolocation"
+  ]
 }
