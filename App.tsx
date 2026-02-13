@@ -12,7 +12,7 @@ import { MOCK_SERVICES, INJECTION_PAYLOADS, COMMON_DIRECTORIES } from './constan
 import { analyzeSecurityFindings } from './services/geminiService.ts';
 import { SeverityBadge } from './components/ui/Badge.tsx';
 
-// Custom Anaconda Logo Component
+// Refined Anaconda Logo Component - Stylized Serpent for Red Team Evasion
 const AnacondaLogo: React.FC<{ className?: string, size?: number }> = ({ className = "", size = 24 }) => (
   <svg 
     width={size} 
@@ -20,15 +20,15 @@ const AnacondaLogo: React.FC<{ className?: string, size?: number }> = ({ classNa
     viewBox="0 0 24 24" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
-    className={`${className} drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]`}
+    className={`${className} drop-shadow-[0_0_12px_rgba(99,102,241,0.6)]`}
   >
     <path 
-      d="M12 2C10.5 2 9 3 8 4.5C7 6 7 8 8 9.5C8.5 10.3 9.3 11 10.2 11.5L7 18C6.5 19 7 20 8 20.5C9.5 21.3 11.2 21.8 13 22C16 22.3 19 21 21 18.5C22.5 16.5 22.5 13.5 21 11.5C20.5 10.8 19.8 10.3 19 10L16 9C15.5 8.8 15 8.5 14.5 8C14 7.5 13.8 7 13.8 6.5C13.8 6 14 5.5 14.5 5.2C15 4.9 15.6 4.8 16.2 5L17.5 5.5C18 5.7 18.5 5.5 18.7 5C19 4.5 18.8 4 18.3 3.8L17 3.3C15.5 2.5 13.5 2 12 2ZM12 4C12.8 4 13.5 4.3 14 4.8C14.5 5.3 14.8 6 14.8 6.5C14.8 7.3 14.5 8 14 8.5C13.5 9 12.8 9.3 12 9.3C11.2 9.3 10.5 9 10 8.5C9.5 8 9.2 7.3 9.2 6.5C9.2 5.7 9.5 5 10 4.5C10.5 4 11.2 4 12 4ZM10 13C11 12.5 12 12.3 13 12.3C14.5 12.3 16 12.8 17.2 13.8C18.4 14.8 19 16.2 19 17.5C19 18.8 18.4 20 17.2 20.8C16 21.6 14.5 22 13 22C11.5 22 10.1 21.6 9 20.9L11.5 16C11.8 15.4 11.8 14.6 11.5 14L10 13Z" 
+      d="M17.5 13.5C18.5 13.5 19.5 14 20.5 15C21.5 16 22 17.5 22 19C22 20.5 21 21.5 19.5 21.5C17.5 21.5 15.5 21 14 20L11 18.5C10.5 18.2 10.2 17.8 10.2 17.2C10.2 16.6 10.5 16.1 11 15.8C12 15.1 13 14.8 14 14.8C15 14.8 16 15.1 17 15.8C17.5 16.1 18 16.1 18.3 15.8C18.6 15.5 18.6 15 18.3 14.7C17.5 13.9 16.5 13.5 15.5 13.5H12C10 13.5 8 14.5 7 16L3.5 21C3 21.7 2.2 22 1.5 22C0.7 22 0 21.3 0 20.5C0 19.8 0.3 19.2 0.8 18.8L4.5 14C5.5 12.5 5.5 10.5 4.5 9L3 6.5C2.5 5.8 2.5 5 3 4.3C3.5 3.6 4.3 3.3 5 3.5C6.5 4 8 3 9 1.5C9.5 0.7 10.3 0.2 11.2 0.1C12.5 -0.1 14 0.2 15 1C16.5 2 17.5 3.5 17.5 5C17.5 6.5 17 8 16 9C15.5 9.5 15.2 10.1 15.2 10.7C15.2 11.3 15.5 11.9 16 12.4C16.4 12.8 16.9 13.1 17.5 13.1V13.5Z" 
       fill="currentColor"
     />
-    <circle cx="10" cy="6.5" r="0.8" fill="#050505" />
-    <circle cx="14" cy="6.5" r="0.8" fill="#050505" />
-    <path d="M11 8.5C11 8.5 11.5 9 12 9C12.5 9 13 8.5 13 8.5" stroke="#050505" strokeWidth="0.5" strokeLinecap="round" />
+    <path d="M11 4.5L11.5 3.5M13 4.5L12.5 3.5" stroke="#050505" strokeWidth="0.8" strokeLinecap="round"/>
+    <circle cx="10.5" cy="5.5" r="0.6" fill="#050505"/>
+    <circle cx="13.5" cy="5.5" r="0.6" fill="#050505"/>
   </svg>
 );
 
@@ -209,7 +209,6 @@ const App: React.FC = () => {
 
   const logRef = useRef<HTMLDivElement>(null);
 
-  // Load profiles from LocalStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('lf47_profiles');
     if (saved) {
@@ -221,7 +220,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Save profiles to LocalStorage whenever they change
   useEffect(() => {
     localStorage.setItem('lf47_profiles', JSON.stringify(profiles));
   }, [profiles]);
@@ -273,7 +271,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Profile Management Functions
   const saveProfile = () => {
     if (!newProfile.name || !newProfile.target) {
       addLog("PROFILE_ERROR: Nome e IP alvo são obrigatórios.");
@@ -346,7 +343,6 @@ const App: React.FC = () => {
       addLog(step.m);
     }
 
-    // Advanced Directory and Injection Discovery
     const discoveredDirs: DiscoveredDirectory[] = [
       { path: '/.env', status: 200, size: '1.2kb', type: 'FILE', vulnerability: 'Information Disclosure' },
       { path: '/api/v1/debug', status: 200, size: '4.5kb', type: 'ENDPOINT', vulnerability: 'Command Injection', payload: INJECTION_PAYLOADS.CMD[0] },
@@ -399,10 +395,10 @@ const App: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[#050505] text-[#e0e0e0]">
       <header className="h-16 border-b border-indigo-500/30 bg-[#0a0a0a] flex items-center justify-between px-6 shrink-0 z-20">
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-indigo-500/20 blur-lg rounded-full animate-pulse"></div>
-            <div className="relative bg-indigo-600 p-2.5 rounded-xl border border-indigo-400/50 flex items-center justify-center">
-              <AnacondaLogo size={24} className="text-white" />
+          <div className="relative group cursor-pointer">
+            <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full animate-pulse group-hover:bg-indigo-500/40 transition-all"></div>
+            <div className="relative bg-indigo-600 p-2.5 rounded-xl border border-indigo-400/50 flex items-center justify-center overflow-hidden">
+              <AnacondaLogo size={28} className="text-white transform group-hover:scale-110 transition-transform" />
             </div>
           </div>
           <div>
@@ -525,29 +521,37 @@ const App: React.FC = () => {
             <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-2 relative z-10">
               {!results && !isScanning && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
-                  <div className="p-20 border border-white/5 rounded-[60px] bg-gradient-to-br from-[#0a0a0a] to-[#050505] shadow-2xl relative overflow-hidden group">
+                  <div className="p-24 border border-white/5 rounded-[80px] bg-gradient-to-br from-[#0a0a0a] to-[#050505] shadow-2xl relative overflow-hidden group">
                     <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                    <AnacondaLogo size={200} className="text-indigo-600 opacity-20 mb-8 mx-auto animate-pulse" />
-                    <h2 className="text-5xl font-black mb-4 uppercase tracking-tighter text-white">READY TO ENGAGE</h2>
-                    <p className="max-w-md text-sm mono text-zinc-600 leading-relaxed uppercase">Next-Gen Red Team Simulator for 2026. Bypassing AI-Sentinel & Forensic Scanners.</p>
+                    <div className="mb-12 relative inline-block">
+                        <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] animate-pulse rounded-full"></div>
+                        <AnacondaLogo size={240} className="text-indigo-600 opacity-20 group-hover:opacity-40 transition-opacity duration-1000 relative" />
+                    </div>
+                    <h2 className="text-6xl font-black mb-6 uppercase tracking-tighter text-white">READY TO ENGAGE</h2>
+                    <p className="max-w-md text-sm mono text-zinc-600 leading-relaxed uppercase mx-auto">Next-Gen Red Team Simulator for 2026. Bypassing AI-Sentinel & Forensic Scanners.</p>
                   </div>
                 </div>
               )}
 
               {isScanning && (
-                <div className="h-full flex flex-col items-center justify-center space-y-12">
+                <div className="h-full flex flex-col items-center justify-center space-y-16">
                   <div className="relative scale-150">
-                    <div className="w-48 h-48 rounded-full border-[1px] border-indigo-600/10 border-t-indigo-500 animate-spin"></div>
+                    <div className="w-56 h-56 rounded-full border-[1px] border-indigo-600/10 border-t-indigo-500 border-t-[3px] animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center flex-col">
+                      <div className="animate-pulse mb-2">
+                        <AnacondaLogo size={64} className="text-indigo-500" />
+                      </div>
                       <span className="text-5xl font-black text-white">{scanProgress}%</span>
-                      <span className="text-[10px] text-indigo-400 mono font-black tracking-widest mt-2 uppercase">Tracing Path</span>
+                      <span className="text-[10px] text-indigo-400 mono font-black tracking-widest mt-2 uppercase">Infiltrating Node</span>
                     </div>
                   </div>
-                  <div className="text-center space-y-2">
-                    <p className={`text-indigo-400 mono text-xs font-bold transition-all duration-300 ${macRotating ? 'scale-110 text-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : ''}`}>
-                      CURRENT MAC: {currentMac}
-                    </p>
-                    <p className="text-zinc-600 mono text-[10px] uppercase">Rotation Shield: {stealth.dynamicMacRotation ? 'ACTIVE' : 'IDLE'}</p>
+                  <div className="text-center space-y-4">
+                    <div className="bg-black/80 border border-white/5 px-8 py-3 rounded-2xl inline-block">
+                        <p className={`text-indigo-400 mono text-xs font-bold transition-all duration-300 ${macRotating ? 'scale-110 text-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : ''}`}>
+                        FINGERPRINT: {currentMac}
+                        </p>
+                    </div>
+                    <p className="text-zinc-600 mono text-[10px] uppercase tracking-[0.3em]">Identity Scrambler: {stealth.identityScrambling ? 'ENGAGED' : 'OFF'}</p>
                   </div>
                 </div>
               )}
@@ -556,8 +560,8 @@ const App: React.FC = () => {
                 <div className="space-y-4 pb-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
                   <div className="bg-indigo-600/5 border border-indigo-500/20 rounded-3xl p-5 flex items-center justify-between backdrop-blur-md">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-green-500/20 rounded-2xl border border-green-500/30">
-                        <Radio className="w-6 h-6 text-green-500" />
+                      <div className="p-3 bg-indigo-500/20 rounded-2xl border border-indigo-500/30">
+                        <AnacondaLogo size={28} className="text-indigo-500" />
                       </div>
                       <div>
                         <span className="text-[10px] text-indigo-400 font-black block uppercase tracking-widest">Infiltration Intelligence // 2026.02.13</span>
@@ -565,13 +569,12 @@ const App: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right px-6 border-l border-white/10">
-                      <span className="text-[9px] text-zinc-500 font-bold block uppercase tracking-widest">Discovery State</span>
-                      <span className="text-xs mono text-green-500 font-black uppercase">COMPLETED</span>
+                      <span className="text-[9px] text-zinc-500 font-bold block uppercase tracking-widest">Node Status</span>
+                      <span className="text-xs mono text-green-500 font-black uppercase tracking-tighter">BREACH_CONFIRMED</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                    {/* Vulnerabilities Section */}
                     <div className="space-y-4">
                       <h3 className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2 mb-2 ml-4">
                         <Bug className="w-4 h-4" /> Core Vulnerabilities
@@ -581,7 +584,6 @@ const App: React.FC = () => {
                       ))}
                     </div>
 
-                    {/* Endpoint Fuzzing Section */}
                     <div className="space-y-4">
                       <h3 className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2 mb-2 ml-4">
                         <FileCode className="w-4 h-4" /> Endpoint Intelligence
@@ -594,7 +596,7 @@ const App: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-[#0f0f0f] to-[#050505] border border-indigo-500/30 rounded-[40px] p-12 relative overflow-hidden shadow-2xl">
+                  <div className="bg-gradient-to-br from-[#0f0f0f] to-[#050505] border border-indigo-500/30 rounded-[40px] p-12 relative overflow-hidden shadow-2xl mt-8">
                     <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-600 to-transparent"></div>
                     <div className="flex items-center justify-between mb-16">
                       <div>
@@ -686,9 +688,12 @@ const App: React.FC = () => {
         {activeTab === 'PROFILES' && (
           <div className="flex-1 flex gap-6 overflow-hidden animate-in fade-in duration-500 relative z-10 p-4">
             <div className="w-[450px] shrink-0 bg-[#0f0f0f]/90 border border-indigo-500/20 rounded-[40px] p-10 flex flex-col shadow-2xl backdrop-blur-xl">
-              <h3 className="text-2xl font-black text-white mb-8 uppercase italic tracking-tighter flex items-center gap-4">
-                <Plus className="w-8 h-8 text-indigo-500" /> Create Node Profile
-              </h3>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="bg-indigo-600 p-3 rounded-2xl">
+                    <AnacondaLogo size={28} className="text-white" />
+                </div>
+                <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Create Profile</h3>
+              </div>
               
               <div className="space-y-6 flex-1">
                 <div>
@@ -752,13 +757,16 @@ const App: React.FC = () => {
               <div className="flex-1 overflow-y-auto scrollbar-hide pr-2">
                 {profiles.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center opacity-20 text-center grayscale">
-                    <Bookmark className="w-32 h-32 mb-6" />
+                    <AnacondaLogo size={120} className="mb-6 opacity-40" />
                     <p className="text-sm font-black uppercase tracking-widest">Repository empty</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {profiles.map(p => (
-                      <div key={p.id} className="bg-[#0f0f0f]/60 border border-white/5 rounded-[32px] p-8 flex flex-col group hover:border-indigo-500/40 transition-all">
+                      <div key={p.id} className="bg-[#0f0f0f]/60 border border-white/5 rounded-[32px] p-8 flex flex-col group hover:border-indigo-500/40 transition-all relative overflow-hidden">
+                         <div className="absolute -top-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <AnacondaLogo size={100} className="text-white" />
+                        </div>
                         <div className="flex justify-between items-start mb-6">
                           <div className="bg-indigo-600/20 p-3 rounded-2xl border border-indigo-500/30">
                             <Monitor className="w-6 h-6 text-indigo-500" />
@@ -842,11 +850,14 @@ const App: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="flex-1 flex flex-col bg-[#0f0f0f]/80 border border-white/5 rounded-[40px] p-12 shadow-2xl">
+            <div className="flex-1 flex flex-col bg-[#0f0f0f]/80 border border-white/5 rounded-[40px] p-12 shadow-2xl relative overflow-hidden">
+                <div className="absolute -bottom-12 -right-12 opacity-5 pointer-events-none">
+                    <AnacondaLogo size={200} className="text-white" />
+                </div>
               <h3 className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-8 flex items-center gap-2">
                 <Hash className="w-4 h-4" /> Server Response
               </h3>
-              <pre className="flex-1 bg-black/60 border border-white/5 rounded-3xl p-8 mono text-sm text-indigo-400 overflow-auto scrollbar-hide shadow-inner leading-relaxed">
+              <pre className="flex-1 bg-black/60 border border-white/5 rounded-3xl p-8 mono text-sm text-indigo-400 overflow-auto scrollbar-hide shadow-inner leading-relaxed relative">
                 {response}
               </pre>
             </div>
@@ -855,7 +866,10 @@ const App: React.FC = () => {
 
         {activeTab === 'DECODER' && (
           <div className="flex-1 flex flex-col gap-4 animate-in fade-in duration-500 pr-2 relative z-10">
-            <div className="bg-[#0f0f0f]/90 border border-white/10 rounded-[60px] p-16 max-w-6xl mx-auto w-full shadow-2xl">
+            <div className="bg-[#0f0f0f]/90 border border-white/10 rounded-[60px] p-16 max-w-6xl mx-auto w-full shadow-2xl relative overflow-hidden">
+                <div className="absolute top-10 right-10 opacity-10">
+                    <AnacondaLogo size={120} className="text-indigo-600" />
+                </div>
               <h3 className="text-3xl font-black text-white mb-10 uppercase tracking-tighter flex items-center gap-6 leading-none">
                 <Layers className="w-10 h-10 text-indigo-600" /> Neural Payload Reconstructor
               </h3>
@@ -899,7 +913,10 @@ const App: React.FC = () => {
           <span className="flex items-center gap-2.5"><User className="w-3.5 h-3.5 text-indigo-500" /> OPERATOR: LOLFAKE47</span>
         </div>
         <div className="flex gap-10 mono text-indigo-600 font-black tracking-widest italic">
-          <span>{target}</span>
+          <div className="flex items-center gap-2">
+            <AnacondaLogo size={14} className="text-indigo-600" />
+            <span>{target}</span>
+          </div>
           <span className="animate-pulse">ANACONDA_SECURE_LINK</span>
         </div>
       </footer>
