@@ -1,31 +1,36 @@
 
-# SecuLearn OS v3.0 (Kali Edition)
+# SecuLearn OS v4.0 (Red Team Edition)
 
-Ferramenta de simulação de segurança ofensiva focada em reconhecimento, enumeração e planejamento de exploração.
+Esta é uma suite de ferramentas de segurança ofensiva simulada para fins educativos, integrada nativamente ao Kali Linux.
 
-## ⚡ Instalação Rápida (Kali Linux)
+## 📥 Instalação Direta via GitHub
 
-Abra seu terminal e cole o seguinte:
+Se queres instalar esta ferramenta no teu Kali Linux a partir do GitHub, executa estes comandos no terminal:
 
 ```bash
-git clone <url-do-seu-repositorio>
-cd <nome-da-pasta>
+# 1. Clonar o repositório
+git clone https://github.com/TEU_UTILIZADOR/seculearn-red-suite.git
+
+# 2. Entrar na pasta
+cd seculearn-red-suite
+
+# 3. Dar permissão ao instalador
 chmod +x install.sh
-./install.sh
-serve -s .
+
+# 4. Executar a instalação como root
+sudo ./install.sh
 ```
 
-## 🛠️ O que faz:
-- **Port Scanning:** Simulação de Nmap (SYN/UDP).
-- **Directory Fuzzing:** Enumeração de diretórios sensíveis (`/.git`, `/admin`, etc).
-- **Vulnerability Mapping:** Identificação automática de CVEs.
-- **Exploitation Plan:** Gera os comandos exatos para usar no `msfconsole`.
-- **AI Analysis:** Usa o motor Gemini para explicar a teoria por trás de cada falha.
+## 🚀 Como Abrir
+Após a instalação, podes abrir a ferramenta de duas formas:
+1. Digitando `seculearn` no terminal.
+2. Procurando por **"SecuLearn Red Suite"** no menu de aplicações do Kali (Categoria: Web Application Analysis).
 
-## 🚀 Como rodar no Windows:
-1. Instale o Node.js.
-2. Na pasta do projeto, abra o terminal e digite: `npx serve .`
-3. Abra o link no navegador.
+## 🛠️ Funcionalidades Integradas
+- **Infrastructure Recon**: Scan de portas com perfis de agressividade (T0-T5) e técnicas de evasão de firewall.
+- **Web Repeater**: Modificação e envio manual de pedidos HTTP (estilo Burp Suite).
+- **Smart Decoder**: Codificação/Decodificação de Base64 e URL.
+- **AI Analysis**: Relatórios automáticos via Gemini 2.5/3 Flash com sugestões de exploits reais.
 
----
-**AVISO:** Desenvolvido apenas para fins de estudo e treinamento ético.
+## ⚠️ Aviso Legal
+Esta ferramenta foi criada estritamente para **educação e treino ético**. O uso em sistemas sem autorização é ilegal e punível por lei.
