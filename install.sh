@@ -1,68 +1,72 @@
 #!/bin/bash
 
-# Cores para o terminal
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
+# Cores e Estética
+G='\033[0;32m'
+B='\033[0;34m'
+R='\033[0;31m'
+Y='\033[1;33m'
 NC='\033[0m' 
 
-echo -e "${BLUE}====================================================${NC}"
-echo -e "${GREEN}      ANACONDA RED SUITE v4.0 - KALI NATIVE${NC}"
-echo -e "${BLUE}====================================================${NC}"
+echo -e "${B}┌────────────────────────────────────────────────────┐${NC}"
+echo -e "${B}│${G}         ANACONDA RED SUITE - BY LOLFAKE47          ${B}│${NC}"
+echo -e "${B}│${G}            Next-Gen Security Simulator             ${B}│${NC}"
+echo -e "${B}└────────────────────────────────────────────────────┘${NC}"
 
-# 1. Verificar permissões de Root
+# 1. Root Check
 if [ "$EUID" -ne 0 ]; then 
-  echo -e "${RED}[!] Por favor, execute como root (sudo ./install.sh)${NC}"
-  exit
+  echo -e "${R}[!] Erro: Precisas de permissões de ROOT (sudo)${NC}"
+  exit 1
 fi
 
-# 2. Verificar dependências básicas
-echo -e "${YELLOW}[*] Verificando dependências...${NC}"
-if ! command -v node &> /dev/null; then
-    echo -e "${YELLOW}[!] Node.js não encontrado. Instalando via apt...${NC}"
-    apt update && apt install -y nodejs npm
-else
-    echo -e "${GREEN}[+] Node.js detectado.${NC}"
-fi
+# 2. Dependency Check
+echo -e "${Y}[*] Validando ambiente Kali Linux...${NC}"
+dependencies=("node" "npm" "git")
+for dep in "${dependencies[@]}"; do
+    if ! command -v $dep &> /dev/null; then
+        echo -e "${Y}[!] $dep não encontrado. Instalando via APT...${NC}"
+        apt update && apt install -y $dep
+    else
+        echo -e "${G}[+] $dep detetado.${NC}"
+    fi
+done
 
-# 3. Instalar o servidor 'serve'
+# 3. Serve Installation
 if ! command -v serve &> /dev/null; then
-    echo -e "${YELLOW}[*] Instalando servidor estático global...${NC}"
+    echo -e "${Y}[*] Instalando motor web (serve)...${NC}"
     npm install -g serve
-else
-    echo -e "${GREEN}[+] Servidor 'serve' já instalado.${NC}"
 fi
 
-# 4. Preparar scripts de execução
-echo -e "${YELLOW}[*] Configurando comando 'anaconda'...${NC}"
+# 4. Global Command Configuration
+echo -e "${Y}[*] Mapeando binário 'anaconda'...${NC}"
 CURRENT_DIR=$(pwd)
-cat > /usr/local/bin/anaconda <<EOF
+BIN_PATH="/usr/local/bin/anaconda"
+
+cat > $BIN_PATH <<EOF
 #!/bin/bash
+echo -e "${G}[+] Iniciando Anaconda Red Suite (v4.5)...${NC}"
 cd $CURRENT_DIR
 serve -s . -l 3000
 EOF
-chmod +x /usr/local/bin/anaconda
 
-# 5. Criar atalho no Menu do Kali
-echo -e "${YELLOW}[*] Criando atalho no menu de aplicações...${NC}"
-cat > /usr/share/applications/anaconda.desktop <<EOF
+chmod +x $BIN_PATH
+
+# 5. Desktop Integration
+echo -e "${Y}[*] Integrando ao menu de ferramentas do Kali...${NC}"
+DESKTOP_FILE="/usr/share/applications/anaconda.desktop"
+cat > $DESKTOP_FILE <<EOF
 [Desktop Entry]
-Name=Anaconda Red Suite
-Comment=Simulador de Penetration Testing e Burp Suite Web
-Exec=/usr/local/bin/anaconda
+Name=Anaconda Red Suite (Lolfake47)
+Comment=Advanced Pentest Simulator 2026
+Exec=anaconda
 Icon=utilities-terminal
 Terminal=true
 Type=Application
-Categories=03-webapp-analysis;01-info-gathering;
-Keywords=pentest;security;burp;nmap;anaconda;
+Categories=03-webapp-analysis;01-info-gathering;08-exploitation-tools;
+Keywords=pentest;security;anaconda;lolfake47;
 EOF
 
-echo -e "${BLUE}====================================================${NC}"
-echo -e "${GREEN}[V] INSTALAÇÃO CONCLUÍDA COM SUCESSO!${NC}"
-echo -e "${BLUE}====================================================${NC}"
-echo -e "${YELLOW}Como usar:${NC}"
-echo -e "1. Procure por 'Anaconda' no menu do Kali."
-echo -e "2. Ou digite ${GREEN}anaconda${NC} em qualquer terminal."
-echo -e "3. O app abrirá em: ${BLUE}http://localhost:3000${NC}"
-echo -e "${BLUE}====================================================${NC}"
+echo -e "${B}──────────────────────────────────────────────────────${NC}"
+echo -e "${G}[V] INSTALAÇÃO CONCLUÍDA - LOLFAKE47 EDITION${NC}"
+echo -e "${Y}  > Terminal: ${NC}anaconda"
+echo -e "${Y}  > Menu:     ${NC}Aplicações > Web App Analysis"
+echo -e "${B}──────────────────────────────────────────────────────${NC}"

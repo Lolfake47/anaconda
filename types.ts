@@ -1,4 +1,3 @@
-
 export enum ScanType {
   TCP = 'TCP',
   UDP = 'UDP',
@@ -17,6 +16,8 @@ export interface StealthSettings {
   fragmentation: boolean;
   decoys: boolean;
   sourcePortSpoofing: boolean;
+  macSpoofing: boolean;
+  traceObfuscation: boolean;
 }
 
 export interface DiscoveredDirectory {
@@ -54,6 +55,7 @@ export interface AIAnalysisResponse {
   riskScore: number;
   recommendations: string[];
   exploitPaths: string[];
+  traceRisk: number; // Nova métrica: Risco de ser descoberto
 }
 
 export interface HttpRequest {
