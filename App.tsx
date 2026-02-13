@@ -4,12 +4,33 @@ import {
   Cpu, RefreshCw, ChevronRight, FolderTree, ExternalLink, 
   Github, Monitor, Copy, Download, HardDrive, Layers, Code, Play, Hash,
   EyeOff, Gauge, Ghost, ShieldAlert, Fingerprint, Lock, ShieldCheck, User,
-  Orbit, ChevronDown, ChevronUp, BookOpen, Link, Shuffle
+  Orbit, ChevronDown, ChevronUp, BookOpen, Link, Shuffle, Plus, Trash2, Save,
+  Database, Bookmark, Bug, FileCode, Radio
 } from 'lucide-react';
-import { ScanType, ScanResult, Severity, AIAnalysisResponse, HttpRequest, StealthSettings, Vulnerability } from './types.ts';
-import { MOCK_SERVICES } from './constants.ts';
+import { ScanType, ScanResult, Severity, AIAnalysisResponse, HttpRequest, StealthSettings, Vulnerability, TargetProfile, DiscoveredDirectory } from './types.ts';
+import { MOCK_SERVICES, INJECTION_PAYLOADS, COMMON_DIRECTORIES } from './constants.ts';
 import { analyzeSecurityFindings } from './services/geminiService.ts';
 import { SeverityBadge } from './components/ui/Badge.tsx';
+
+// Custom Anaconda Logo Component
+const AnacondaLogo: React.FC<{ className?: string, size?: number }> = ({ className = "", size = 24 }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    className={`${className} drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]`}
+  >
+    <path 
+      d="M12 2C10.5 2 9 3 8 4.5C7 6 7 8 8 9.5C8.5 10.3 9.3 11 10.2 11.5L7 18C6.5 19 7 20 8 20.5C9.5 21.3 11.2 21.8 13 22C16 22.3 19 21 21 18.5C22.5 16.5 22.5 13.5 21 11.5C20.5 10.8 19.8 10.3 19 10L16 9C15.5 8.8 15 8.5 14.5 8C14 7.5 13.8 7 13.8 6.5C13.8 6 14 5.5 14.5 5.2C15 4.9 15.6 4.8 16.2 5L17.5 5.5C18 5.7 18.5 5.5 18.7 5C19 4.5 18.8 4 18.3 3.8L17 3.3C15.5 2.5 13.5 2 12 2ZM12 4C12.8 4 13.5 4.3 14 4.8C14.5 5.3 14.8 6 14.8 6.5C14.8 7.3 14.5 8 14 8.5C13.5 9 12.8 9.3 12 9.3C11.2 9.3 10.5 9 10 8.5C9.5 8 9.2 7.3 9.2 6.5C9.2 5.7 9.5 5 10 4.5C10.5 4 11.2 4 12 4ZM10 13C11 12.5 12 12.3 13 12.3C14.5 12.3 16 12.8 17.2 13.8C18.4 14.8 19 16.2 19 17.5C19 18.8 18.4 20 17.2 20.8C16 21.6 14.5 22 13 22C11.5 22 10.1 21.6 9 20.9L11.5 16C11.8 15.4 11.8 14.6 11.5 14L10 13Z" 
+      fill="currentColor"
+    />
+    <circle cx="10" cy="6.5" r="0.8" fill="#050505" />
+    <circle cx="14" cy="6.5" r="0.8" fill="#050505" />
+    <path d="M11 8.5C11 8.5 11.5 9 12 9C12.5 9 13 8.5 13 8.5" stroke="#050505" strokeWidth="0.5" strokeLinecap="round" />
+  </svg>
+);
 
 const VulnerabilityCard: React.FC<{ v: Vulnerability, copyToClipboard: (t: string) => void }> = ({ v, copyToClipboard }) => {
   const [expandedSection, setExpandedSection] = useState<'theory' | 'steps' | 'url' | null>(null);
@@ -106,8 +127,42 @@ const VulnerabilityCard: React.FC<{ v: Vulnerability, copyToClipboard: (t: strin
   );
 };
 
+const DirectoryResultCard: React.FC<{ dir: DiscoveredDirectory }> = ({ dir }) => {
+  return (
+    <div className="bg-[#0f0f0f]/60 border border-white/5 rounded-2xl p-5 flex items-start gap-4 hover:border-indigo-500/30 transition-all group">
+      <div className={`p-2.5 rounded-xl border ${dir.vulnerability ? 'bg-red-950/20 border-red-500/50 text-red-400' : 'bg-zinc-900 border-white/5 text-zinc-500'}`}>
+        {dir.vulnerability ? <Bug className="w-5 h-5" /> : <FolderTree className="w-5 h-5" />}
+      </div>
+      <div className="flex-1 overflow-hidden">
+        <div className="flex items-center justify-between mb-1">
+          <span className="mono text-xs text-white font-bold truncate">{dir.path}</span>
+          <span className={`text-[10px] px-2 py-0.5 rounded font-black ${dir.status === 200 ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'}`}>
+            {dir.status}
+          </span>
+        </div>
+        <div className="flex items-center gap-4 text-[10px] text-zinc-600 mb-2">
+          <span className="mono">SIZE: {dir.size}</span>
+          <span className="mono uppercase">{dir.type}</span>
+        </div>
+        
+        {dir.vulnerability && (
+          <div className="mt-3 p-3 bg-black/80 rounded-xl border border-red-500/20 space-y-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-3 h-3 text-red-500" />
+              <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">{dir.vulnerability}</span>
+            </div>
+            <code className="block p-2 bg-zinc-950 rounded text-[10px] text-indigo-400 mono break-all">
+              {dir.payload}
+            </code>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'RECON' | 'REPEATER' | 'DECODER'>('RECON');
+  const [activeTab, setActiveTab] = useState<'RECON' | 'REPEATER' | 'DECODER' | 'PROFILES'>('RECON');
   const [target, setTarget] = useState('192.168.1.100');
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
@@ -117,6 +172,15 @@ const App: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [macRotating, setMacRotating] = useState(false);
 
+  // Profiles State
+  const [profiles, setProfiles] = useState<TargetProfile[]>([]);
+  const [newProfile, setNewProfile] = useState<Partial<TargetProfile>>({
+    name: '',
+    target: '',
+    commonPorts: '80, 443, 22',
+    description: ''
+  });
+
   const [stealth, setStealth] = useState<StealthSettings>({
     timing: 'T1',
     fragmentation: true,
@@ -125,7 +189,8 @@ const App: React.FC = () => {
     macSpoofing: true,
     dynamicMacRotation: true,
     traceObfuscation: true,
-    identityScrambling: true
+    identityScrambling: true,
+    payloadRandomization: true
   });
 
   const [currentMac, setCurrentMac] = useState('UNSET');
@@ -144,6 +209,23 @@ const App: React.FC = () => {
 
   const logRef = useRef<HTMLDivElement>(null);
 
+  // Load profiles from LocalStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('lf47_profiles');
+    if (saved) {
+      try {
+        setProfiles(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to load profiles", e);
+      }
+    }
+  }, []);
+
+  // Save profiles to LocalStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('lf47_profiles', JSON.stringify(profiles));
+  }, [profiles]);
+
   const addLog = (msg: string) => {
     setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
   };
@@ -155,7 +237,6 @@ const App: React.FC = () => {
   }, [logs]);
 
   const generateMac = () => {
-    // 2026 Common Vendors: VMware, Cisco, Dell, Apple, Intel, TP-Link
     const vendors = ["00:50:56", "00:0C:29", "00:05:69", "08:00:27", "00:1B:21", "00:16:3E", "B8:27:EB"];
     const prefix = vendors[Math.floor(Math.random() * vendors.length)];
     const suffix = Array.from({length: 3}, () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join(":").toUpperCase();
@@ -192,6 +273,36 @@ const App: React.FC = () => {
     }
   };
 
+  // Profile Management Functions
+  const saveProfile = () => {
+    if (!newProfile.name || !newProfile.target) {
+      addLog("PROFILE_ERROR: Nome e IP alvo são obrigatórios.");
+      return;
+    }
+    const profile: TargetProfile = {
+      id: Date.now().toString(),
+      name: newProfile.name,
+      target: newProfile.target,
+      commonPorts: newProfile.commonPorts || '80, 443, 22',
+      description: newProfile.description || '',
+      createdAt: new Date().toISOString()
+    };
+    setProfiles(prev => [...prev, profile]);
+    setNewProfile({ name: '', target: '', commonPorts: '80, 443, 22', description: '' });
+    addLog(`PROFILE_SYNC: Perfil '${profile.name}' salvo com sucesso.`);
+  };
+
+  const deleteProfile = (id: string) => {
+    setProfiles(prev => prev.filter(p => p.id !== id));
+    addLog(`PROFILE_SYNC: Perfil removido do banco local.`);
+  };
+
+  const loadProfile = (p: TargetProfile) => {
+    setTarget(p.target);
+    setActiveTab('RECON');
+    addLog(`PROFILE_LOAD: Carregado alvo ${p.target} do perfil '${p.name}'.`);
+  };
+
   const simulateScan = useCallback(async () => {
     if (!target) return;
     setIsScanning(true);
@@ -209,15 +320,12 @@ const App: React.FC = () => {
       addLog(`EVASION: MAC Spoofing Initialized: ${mac}`);
     }
 
-    if (stealth.identityScrambling) {
-      addLog("EVASION: Identity Scrambling ativado. Assinaturas de rede ofuscadas.");
-    }
-
     const sequence = [
       { p: 10, m: "Preparando payloads ofuscados para 2026..." },
-      { p: 30, m: "Contornando Sentinel-AI (IA Defensiva)..." },
-      { p: 60, m: "Injeção de pacotes fragmentados (Bypass IDS)..." },
-      { p: 85, m: "Verificando mitigações de vulnerabilidades (Patches 2026)..." },
+      { p: 25, m: "Contornando Sentinel-AI (IA Defensiva)..." },
+      { p: 40, m: "Port enumeration & service profiling..." },
+      { p: 60, m: "Deep Endpoint Fuzzing (SQLi/XSS/CMD Probe)..." },
+      { p: 80, m: "Verificando mitigações de vulnerabilidades (Patches 2026)..." },
       { p: 100, m: "Análise finalizada. Gerando relatório de risco." }
     ];
 
@@ -230,7 +338,7 @@ const App: React.FC = () => {
         setMacRotating(true);
         const nextMac = generateMac();
         setCurrentMac(nextMac);
-        addLog(`ROTATION: MAC alterado para ${nextMac} (Difficulty increased)`);
+        addLog(`ROTATION: MAC alterado para ${nextMac}`);
         setTimeout(() => setMacRotating(false), 300);
       }
 
@@ -238,14 +346,23 @@ const App: React.FC = () => {
       addLog(step.m);
     }
 
+    // Advanced Directory and Injection Discovery
+    const discoveredDirs: DiscoveredDirectory[] = [
+      { path: '/.env', status: 200, size: '1.2kb', type: 'FILE', vulnerability: 'Information Disclosure' },
+      { path: '/api/v1/debug', status: 200, size: '4.5kb', type: 'ENDPOINT', vulnerability: 'Command Injection', payload: INJECTION_PAYLOADS.CMD[0] },
+      { path: '/graphql', status: 200, size: '0.8kb', type: 'GATEWAY', vulnerability: 'SQL Injection', payload: INJECTION_PAYLOADS.SQLI[1] },
+      { path: '/admin/login', status: 200, size: '12kb', type: 'UI', vulnerability: 'Stored XSS', payload: INJECTION_PAYLOADS.XSS[2] },
+      { path: '/config/backup.sql', status: 200, size: '45mb', type: 'DATA' }
+    ];
+
     const mockResult: ScanResult = {
       target,
-      timestamp: "2026-02-13T16:20:00Z",
+      timestamp: new Date().toISOString(),
       type: ScanType.TCP,
-      openPorts: [80, 443, 22],
+      openPorts: [80, 443, 22, 5432],
       services: MOCK_SERVICES,
       stealthUsed: stealth,
-      directories: [{ path: '/.env', status: 200, size: '1kb', type: 'CRITICAL' }],
+      directories: discoveredDirs,
       vulnerabilities: [
         {
           id: 'LF47-Z01',
@@ -284,8 +401,8 @@ const App: React.FC = () => {
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className="absolute inset-0 bg-indigo-500/20 blur-lg rounded-full animate-pulse"></div>
-            <div className="relative bg-indigo-600 p-2.5 rounded-xl border border-indigo-400/50">
-              <Shield className="w-5 h-5 text-white" />
+            <div className="relative bg-indigo-600 p-2.5 rounded-xl border border-indigo-400/50 flex items-center justify-center">
+              <AnacondaLogo size={24} className="text-white" />
             </div>
           </div>
           <div>
@@ -299,7 +416,7 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex bg-black/50 p-1 rounded-xl border border-white/5">
-          {['RECON', 'REPEATER', 'DECODER'].map((tab) => (
+          {['RECON', 'REPEATER', 'DECODER', 'PROFILES'].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -356,7 +473,7 @@ const App: React.FC = () => {
                     {[
                       { key: 'macSpoofing', label: 'Static MAC Spoofing', icon: Fingerprint },
                       { key: 'dynamicMacRotation', label: 'Dynamic MAC Rotation', icon: Orbit },
-                      { key: 'identityScrambling', label: 'Identity Scrambling', icon: Shuffle },
+                      { key: 'payloadRandomization', label: 'Injection Fuzzing', icon: Shuffle },
                       { key: 'traceObfuscation', label: 'Advanced Trace Wipe', icon: EyeOff },
                       { key: 'decoys', label: 'AI Honeypot Decoys', icon: Ghost }
                     ].map((opt) => (
@@ -408,8 +525,9 @@ const App: React.FC = () => {
             <div className="flex-1 flex flex-col gap-4 overflow-y-auto pr-2 relative z-10">
               {!results && !isScanning && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
-                  <div className="p-20 border border-white/5 rounded-[60px] bg-gradient-to-br from-[#0a0a0a] to-[#050505] shadow-2xl">
-                    <Ghost className="w-40 h-40 text-indigo-600 opacity-20 mb-8 mx-auto" />
+                  <div className="p-20 border border-white/5 rounded-[60px] bg-gradient-to-br from-[#0a0a0a] to-[#050505] shadow-2xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                    <AnacondaLogo size={200} className="text-indigo-600 opacity-20 mb-8 mx-auto animate-pulse" />
                     <h2 className="text-5xl font-black mb-4 uppercase tracking-tighter text-white">READY TO ENGAGE</h2>
                     <p className="max-w-md text-sm mono text-zinc-600 leading-relaxed uppercase">Next-Gen Red Team Simulator for 2026. Bypassing AI-Sentinel & Forensic Scanners.</p>
                   </div>
@@ -439,23 +557,41 @@ const App: React.FC = () => {
                   <div className="bg-indigo-600/5 border border-indigo-500/20 rounded-3xl p-5 flex items-center justify-between backdrop-blur-md">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-green-500/20 rounded-2xl border border-green-500/30">
-                        <ShieldCheck className="w-6 h-6 text-green-500" />
+                        <Radio className="w-6 h-6 text-green-500" />
                       </div>
                       <div>
-                        <span className="text-[10px] text-indigo-400 font-black block uppercase tracking-widest">Audit Result: 2026-02-13</span>
-                        <span className="text-sm font-bold text-white uppercase italic tracking-tight">Exploitation vectors identified for {target}</span>
+                        <span className="text-[10px] text-indigo-400 font-black block uppercase tracking-widest">Infiltration Intelligence // 2026.02.13</span>
+                        <span className="text-sm font-bold text-white uppercase italic tracking-tight">Active session for {target}</span>
                       </div>
                     </div>
                     <div className="text-right px-6 border-l border-white/10">
-                      <span className="text-[9px] text-zinc-500 font-bold block uppercase tracking-widest">Final HW Fingerprint</span>
-                      <span className="text-xs mono text-zinc-300">{currentMac}</span>
+                      <span className="text-[9px] text-zinc-500 font-bold block uppercase tracking-widest">Discovery State</span>
+                      <span className="text-xs mono text-green-500 font-black uppercase">COMPLETED</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                    {results.vulnerabilities.map(v => (
-                      <VulnerabilityCard key={v.id} v={v} copyToClipboard={copyToClipboard} />
-                    ))}
+                    {/* Vulnerabilities Section */}
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2 mb-2 ml-4">
+                        <Bug className="w-4 h-4" /> Core Vulnerabilities
+                      </h3>
+                      {results.vulnerabilities.map(v => (
+                        <VulnerabilityCard key={v.id} v={v} copyToClipboard={copyToClipboard} />
+                      ))}
+                    </div>
+
+                    {/* Endpoint Fuzzing Section */}
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2 mb-2 ml-4">
+                        <FileCode className="w-4 h-4" /> Endpoint Intelligence
+                      </h3>
+                      <div className="grid grid-cols-1 gap-3">
+                        {results.directories.map((dir, i) => (
+                          <DirectoryResultCard key={i} dir={dir} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="bg-gradient-to-br from-[#0f0f0f] to-[#050505] border border-indigo-500/30 rounded-[40px] p-12 relative overflow-hidden shadow-2xl">
@@ -463,10 +599,10 @@ const App: React.FC = () => {
                     <div className="flex items-center justify-between mb-16">
                       <div>
                         <h3 className="text-4xl font-black text-white mb-2 uppercase italic tracking-tighter">ANACONDA_AI ANALYTICS</h3>
-                        <p className="text-xs text-indigo-400 mono font-black tracking-[0.5em] uppercase">Security Mitigation & Trace Report (2026-02-13)</p>
+                        <p className="text-xs text-indigo-400 mono font-black tracking-[0.5em] uppercase">Deep Fuzzing & Trace Report (2026-02-13)</p>
                       </div>
                       <div className="bg-indigo-600 p-5 rounded-[24px] shadow-[0_0_60px_rgba(79,70,229,0.4)] border border-indigo-400/50">
-                        <Cpu className="w-12 h-12 text-white" />
+                        <AnacondaLogo size={48} className="text-white" />
                       </div>
                     </div>
 
@@ -489,7 +625,7 @@ const App: React.FC = () => {
                           
                           <div className="space-y-6">
                             <h4 className="text-[10px] font-black text-indigo-300 uppercase tracking-widest flex items-center gap-2">
-                              <Layers className="w-4 h-4" /> Stealth Escalation Paths
+                              <Layers className="w-4 h-4" /> Infiltration Paths
                             </h4>
                             <div className="grid grid-cols-1 gap-3">
                               {analysis.exploitPaths.map((path, i) => (
@@ -522,7 +658,7 @@ const App: React.FC = () => {
                               </div>
                             </div>
                             <span className="text-[11px] mono text-indigo-400 font-black uppercase tracking-[0.3em]">
-                              {analysis.traceRisk < 15 ? "GHOST_ID_CONFIRMED" : "REVEAL_LEVEL_CAUTION"}
+                              {analysis.traceRisk < 15 ? "ANONYMITY_SHIELD_V4" : "REVEAL_LEVEL_CAUTION"}
                             </span>
                           </div>
 
@@ -547,7 +683,122 @@ const App: React.FC = () => {
           </>
         )}
 
-        {/* REPEATER & DECODER tabs stay mostly the same but with Lolfake47 style */}
+        {activeTab === 'PROFILES' && (
+          <div className="flex-1 flex gap-6 overflow-hidden animate-in fade-in duration-500 relative z-10 p-4">
+            <div className="w-[450px] shrink-0 bg-[#0f0f0f]/90 border border-indigo-500/20 rounded-[40px] p-10 flex flex-col shadow-2xl backdrop-blur-xl">
+              <h3 className="text-2xl font-black text-white mb-8 uppercase italic tracking-tighter flex items-center gap-4">
+                <Plus className="w-8 h-8 text-indigo-500" /> Create Node Profile
+              </h3>
+              
+              <div className="space-y-6 flex-1">
+                <div>
+                  <label className="block text-[10px] text-zinc-500 font-black uppercase mb-2 tracking-widest ml-1">Profile Identifier</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Internal Financial Server"
+                    className="w-full bg-black border border-white/5 rounded-2xl py-4 px-6 mono text-sm focus:border-indigo-500 outline-none transition-all placeholder:text-zinc-800"
+                    value={newProfile.name}
+                    onChange={(e) => setNewProfile({...newProfile, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-zinc-500 font-black uppercase mb-2 tracking-widest ml-1">Engagement Target (IP/Host)</label>
+                  <input 
+                    type="text" 
+                    placeholder="10.0.0.5 or node.secure.int"
+                    className="w-full bg-black border border-white/5 rounded-2xl py-4 px-6 mono text-sm focus:border-indigo-500 outline-none transition-all placeholder:text-zinc-800"
+                    value={newProfile.target}
+                    onChange={(e) => setNewProfile({...newProfile, target: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-zinc-500 font-black uppercase mb-2 tracking-widest ml-1">Critical Port List</label>
+                  <input 
+                    type="text" 
+                    placeholder="22, 80, 443, 3306"
+                    className="w-full bg-black border border-white/5 rounded-2xl py-4 px-6 mono text-sm focus:border-indigo-500 outline-none transition-all placeholder:text-zinc-800"
+                    value={newProfile.commonPorts}
+                    onChange={(e) => setNewProfile({...newProfile, commonPorts: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-zinc-500 font-black uppercase mb-2 tracking-widest ml-1">Strategic Intelligence / Notes</label>
+                  <textarea 
+                    placeholder="Legacy OS, possibly unpatched..."
+                    className="w-full h-32 bg-black border border-white/5 rounded-2xl py-4 px-6 mono text-sm focus:border-indigo-500 outline-none transition-all resize-none placeholder:text-zinc-800"
+                    value={newProfile.description}
+                    onChange={(e) => setNewProfile({...newProfile, description: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <button 
+                onClick={saveProfile}
+                className="mt-8 w-full bg-indigo-600 hover:bg-indigo-500 py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/30 transition-all text-white"
+              >
+                <Save className="w-5 h-5" />
+                COMMIT TO DATABASE
+              </button>
+            </div>
+
+            <div className="flex-1 flex flex-col gap-6 overflow-hidden">
+              <div className="flex items-center justify-between px-4">
+                <h3 className="text-xs font-black text-indigo-400 uppercase tracking-[0.4em] flex items-center gap-3">
+                  <Database className="w-5 h-5" /> Target Repository // LF47
+                </h3>
+                <span className="text-[10px] text-zinc-600 font-bold mono">ENTRIES: {profiles.length}</span>
+              </div>
+
+              <div className="flex-1 overflow-y-auto scrollbar-hide pr-2">
+                {profiles.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center opacity-20 text-center grayscale">
+                    <Bookmark className="w-32 h-32 mb-6" />
+                    <p className="text-sm font-black uppercase tracking-widest">Repository empty</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {profiles.map(p => (
+                      <div key={p.id} className="bg-[#0f0f0f]/60 border border-white/5 rounded-[32px] p-8 flex flex-col group hover:border-indigo-500/40 transition-all">
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="bg-indigo-600/20 p-3 rounded-2xl border border-indigo-500/30">
+                            <Monitor className="w-6 h-6 text-indigo-500" />
+                          </div>
+                          <button 
+                            onClick={() => deleteProfile(p.id)}
+                            className="p-3 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <h4 className="text-xl font-black text-white mb-1 uppercase tracking-tighter truncate">{p.name}</h4>
+                        <p className="text-xs text-indigo-400 mono font-bold mb-4">{p.target}</p>
+                        <div className="flex-1 space-y-4">
+                          <div className="bg-black/40 rounded-2xl p-4 border border-white/5">
+                            <span className="text-[9px] text-zinc-600 font-black uppercase block mb-1 tracking-widest">Active Services</span>
+                            <span className="text-[11px] mono text-zinc-400">{p.commonPorts}</span>
+                          </div>
+                          {p.description && (
+                            <p className="text-[11px] text-zinc-500 italic leading-relaxed px-1">
+                              "{p.description}"
+                            </p>
+                          )}
+                        </div>
+                        <button 
+                          onClick={() => loadProfile(p)}
+                          className="mt-6 w-full bg-white/5 hover:bg-indigo-600/20 border border-white/10 hover:border-indigo-500/40 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-zinc-400 hover:text-white flex items-center justify-center gap-2"
+                        >
+                          <Play className="w-3 h-3" />
+                          Engage Profile
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'REPEATER' && (
           <div className="flex-1 flex gap-4 animate-in fade-in duration-500 pr-2 relative z-10">
             <div className="flex-1 flex flex-col gap-4">
@@ -584,7 +835,7 @@ const App: React.FC = () => {
                 <button 
                   onClick={handleSendRequest}
                   disabled={isSendingRequest}
-                  className="mt-8 w-full bg-indigo-600 hover:bg-indigo-500 py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/30 transition-all"
+                  className="mt-8 w-full bg-indigo-600 hover:bg-indigo-500 py-5 rounded-[24px] font-black uppercase text-xs tracking-[0.3em] flex items-center justify-center gap-3 shadow-2xl shadow-indigo-600/30 transition-all text-white"
                 >
                   {isSendingRequest ? <RefreshCw className="animate-spin w-5 h-5" /> : <Play className="w-5 h-5" />}
                   SEND THROUGH ANONYMOUS PROXY
@@ -644,7 +895,7 @@ const App: React.FC = () => {
           <span className="flex items-center gap-2.5 text-green-600 font-black"><ShieldCheck className="w-3.5 h-3.5" /> SYSTEM_SYNC: 2026.02.13</span>
           <span className="flex items-center gap-2.5"><Fingerprint className="w-3.5 h-3.5 text-indigo-500" /> HW_SPOOF: {stealth.macSpoofing ? 'ENGAGED' : 'OFF'}</span>
           <span className="flex items-center gap-2.5"><Orbit className={`w-3.5 h-3.5 ${macRotating ? 'text-yellow-400' : 'text-indigo-500'}`} /> ROTATION: {stealth.dynamicMacRotation ? 'ON' : 'OFF'}</span>
-          <span className="flex items-center gap-2.5"><Shuffle className="w-3.5 h-3.5 text-indigo-500" /> ID_SCRAMBLE: {stealth.identityScrambling ? 'ACTIVE' : 'OFF'}</span>
+          <span className="flex items-center gap-2.5"><Shuffle className="w-3.5 h-3.5 text-indigo-500" /> INJECTION_FUZZ: {stealth.payloadRandomization ? 'ACTIVE' : 'OFF'}</span>
           <span className="flex items-center gap-2.5"><User className="w-3.5 h-3.5 text-indigo-500" /> OPERATOR: LOLFAKE47</span>
         </div>
         <div className="flex gap-10 mono text-indigo-600 font-black tracking-widest italic">

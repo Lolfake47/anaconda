@@ -19,7 +19,17 @@ export interface StealthSettings {
   macSpoofing: boolean;
   dynamicMacRotation: boolean;
   traceObfuscation: boolean;
-  identityScrambling: boolean; // New: Scramble User-Agents and signatures
+  identityScrambling: boolean;
+  payloadRandomization: boolean; // New: Randomized injection patterns
+}
+
+export interface TargetProfile {
+  id: string;
+  name: string;
+  target: string;
+  commonPorts: string;
+  description: string;
+  createdAt: string;
 }
 
 export interface DiscoveredDirectory {
@@ -27,6 +37,9 @@ export interface DiscoveredDirectory {
   status: number;
   size: string;
   type: string;
+  vulnerability?: string; // Potential injection type found
+  payload?: string; // Example payload that triggered response
+  mitigation?: string;
 }
 
 export interface ScanResult {
