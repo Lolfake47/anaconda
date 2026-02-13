@@ -17,8 +17,9 @@ export interface StealthSettings {
   decoys: boolean;
   sourcePortSpoofing: boolean;
   macSpoofing: boolean;
-  dynamicMacRotation: boolean; // Nova funcionalidade de ofuscação dinâmica
+  dynamicMacRotation: boolean;
   traceObfuscation: boolean;
+  identityScrambling: boolean; // New: Scramble User-Agents and signatures
 }
 
 export interface DiscoveredDirectory {
@@ -56,7 +57,7 @@ export interface AIAnalysisResponse {
   riskScore: number;
   recommendations: string[];
   exploitPaths: string[];
-  traceRisk: number; // Nova métrica: Risco de ser descoberto
+  traceRisk: number;
 }
 
 export interface HttpRequest {
