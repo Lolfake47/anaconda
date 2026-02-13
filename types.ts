@@ -47,3 +47,10 @@ export interface AIAnalysisResponse {
   recommendations: string[];
   exploitPaths: string[];
 }
+
+export interface HttpRequest {
+  method: string;
+  url: string;
+  headers: string;
+  body: string;
+}

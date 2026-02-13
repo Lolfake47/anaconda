@@ -1,33 +1,31 @@
 
-# SecuLearn - Cybersecurity Analysis Simulator
+# SecuLearn OS v3.0 (Kali Edition)
 
-Este projeto é um simulador educacional de enumeração de rede e análise de vulnerabilidades, projetado para rodar nativamente em ambientes como Kali Linux, Windows ou via GitHub Pages.
+Ferramenta de simulação de segurança ofensiva focada em reconhecimento, enumeração e planejamento de exploração.
 
-## 🚀 Como Executar
+## ⚡ Instalação Rápida (Kali Linux)
 
-### Opção 1: GitHub Pages (O mais fácil)
-1. Crie um novo repositório no seu GitHub.
-2. Faça o upload de todos os arquivos (`index.html`, `App.tsx`, `index.tsx`, etc.).
-3. Vá em **Settings > Pages** e ative o GitHub Pages apontando para a branch principal.
-4. A aplicação estará disponível online.
+Abra seu terminal e cole o seguinte:
 
-### Opção 2: Local (Kali Linux ou Windows)
-1. Certifique-se de ter o **Node.js** instalado.
-2. Instale o servidor estático simples:
-   ```bash
-   npm install -g serve
-   ```
-3. Na pasta do projeto, execute:
-   ```bash
-   serve .
-   ```
-4. Abra o navegador em `http://localhost:3000`.
+```bash
+git clone <url-do-seu-repositorio>
+cd <nome-da-pasta>
+chmod +x install.sh
+./install.sh
+serve -s .
+```
 
-## 🛠️ Tecnologias Utilizadas
-- **React 19** via ESM (sem necessidade de Webpack/Babel complexos).
-- **Tailwind CSS** para interface stealth/industrial.
-- **Lucide React** para ícones técnicos.
-- **Google Gemini API** para análise inteligente de exploits.
+## 🛠️ O que faz:
+- **Port Scanning:** Simulação de Nmap (SYN/UDP).
+- **Directory Fuzzing:** Enumeração de diretórios sensíveis (`/.git`, `/admin`, etc).
+- **Vulnerability Mapping:** Identificação automática de CVEs.
+- **Exploitation Plan:** Gera os comandos exatos para usar no `msfconsole`.
+- **AI Analysis:** Usa o motor Gemini para explicar a teoria por trás de cada falha.
 
-## ⚠️ Aviso Legal
-Esta ferramenta é exclusivamente para fins **educacionais**. O uso destas técnicas contra sistemas sem autorização é ilegal.
+## 🚀 Como rodar no Windows:
+1. Instale o Node.js.
+2. Na pasta do projeto, abra o terminal e digite: `npx serve .`
+3. Abra o link no navegador.
+
+---
+**AVISO:** Desenvolvido apenas para fins de estudo e treinamento ético.
