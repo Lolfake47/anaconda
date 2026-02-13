@@ -17,6 +17,7 @@ export interface StealthSettings {
   decoys: boolean;
   sourcePortSpoofing: boolean;
   macSpoofing: boolean;
+  dynamicMacRotation: boolean; // Nova funcionalidade de ofuscação dinâmica
   traceObfuscation: boolean;
 }
 

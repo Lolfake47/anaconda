@@ -1,10 +1,10 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { 
   Shield, Terminal, Search, Activity, Zap, Globe, AlertTriangle, 
   Cpu, RefreshCw, ChevronRight, FolderTree, ExternalLink, 
   Github, Monitor, Copy, Download, HardDrive, Layers, Code, Play, Hash,
-  EyeOff, Gauge, Ghost, ShieldAlert, Fingerprint, Lock, ShieldCheck, User
+  EyeOff, Gauge, Ghost, ShieldAlert, Fingerprint, Lock, ShieldCheck, User,
+  Orbit
 } from 'lucide-react';
 import { ScanType, ScanResult, Severity, AIAnalysisResponse, HttpRequest, StealthSettings } from './types.ts';
 import { MOCK_SERVICES } from './constants.ts';
@@ -28,6 +28,7 @@ const App: React.FC = () => {
     decoys: true,
     sourcePortSpoofing: true,
     macSpoofing: true,
+    dynamicMacRotation: true,
     traceObfuscation: true
   });
 
@@ -60,16 +61,18 @@ const App: React.FC = () => {
   }, [logs]);
 
   const generateMac = () => {
-    return "00:" + Array.from({length: 5}, () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join(":").toUpperCase();
+    // Generates a random MAC address with specific 2026 common vendor prefixes
+    const vendors = ["00:50:56", "00:0C:29", "00:05:69", "08:00:27"]; // VMware, Intel, VirtualBox
+    const prefix = vendors[Math.floor(Math.random() * vendors.length)];
+    const suffix = Array.from({length: 3}, () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join(":").toUpperCase();
+    return `${prefix}:${suffix}`;
   };
 
-  // Fix: Added handleSendRequest for REPEATER tab
   const handleSendRequest = async () => {
     if (!request.url) return;
     setIsSendingRequest(true);
     addLog(`INTERCEPTOR: Encaminhando pacote ${request.method} para ${request.url} via túnel cifrado...`);
     
-    // Simulating network delay for 2026 infrastructure
     await new Promise(r => setTimeout(r, 1500));
     
     setResponse(`HTTP/1.1 200 OK
@@ -90,13 +93,11 @@ Connection: close
     setIsSendingRequest(false);
   };
 
-  // Fix: Added copyToClipboard for offensive commands
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    addLog(`CLIPBOARD: Payload copiado para a área de transferência.`);
+    addLog(`CLIPBOARD: Payload copiado.`);
   };
 
-  // Fix: Added handleDecode for DECODER tab
   const handleDecode = (mode: 'BASE64' | 'URL') => {
     try {
       if (mode === 'BASE64') {
@@ -107,7 +108,7 @@ Connection: close
         addLog(`NEURAL_ENGINE: Normalização de URL finalizada.`);
       }
     } catch (e) {
-      setDecoderOutput(`CRITICAL_ERROR: Falha na decodificação do blob. O payload pode estar corrompido.`);
+      setDecoderOutput(`CRITICAL_ERROR: Falha na decodificação.`);
       addLog(`NEURAL_ENGINE: FALHA AO PROCESSAR PAYLOAD.`);
     }
   };
@@ -121,30 +122,38 @@ Connection: close
     setAnalysis(null);
 
     addLog(`INIT: Anaconda Red Suite Engine v4.5 - Author: Lolfake47`);
-    addLog(`STAMP: Simulation Date 2026-02-13`);
+    addLog(`STAMP: Engajamento iniciado em 2026-02-13`);
     
     if (stealth.macSpoofing) {
       const mac = generateMac();
       setCurrentMac(mac);
-      addLog(`EVASION: MAC Address Spoofing ativado. Novo HWID: ${mac}`);
+      addLog(`EVASION: MAC Address Spoofing inicial: ${mac}`);
     }
     
     if (stealth.traceObfuscation) {
-      addLog("EVASION: Ofuscação de rastro de memória ativa. Limpeza de heap ativada.");
+      addLog("EVASION: Ativando Blind-Spot Protocol para ofuscação de rastro.");
     }
 
     const sequence = [
       { p: 5, m: "Preparando payloads ofuscados..." },
-      { p: 25, m: "Evadindo SOC Baseado em IA (Detecção de Anomalia 2026)..." },
+      { p: 25, m: "Evadindo SOC Baseado em IA (2026 AI-Sentinel)..." },
       { p: 50, m: "Injeção de pacotes fragmentados (MTU 512)..." },
-      { p: 75, m: "Identificando Zero-Days e Misconfigurations..." },
-      { p: 100, m: "Enumeration complete. Analisando mitigação de 2026." }
+      { p: 75, m: "Scanning Zero-Day vectors em OpenSSH/Apache..." },
+      { p: 100, m: "Enumeration complete. Analisando defesas..." }
     ];
 
     const speedMultiplier = stealth.timing === 'T0' ? 5 : stealth.timing === 'T5' ? 0.3 : 1.2;
 
     for (const step of sequence) {
       await new Promise(r => setTimeout(r, 800 * speedMultiplier));
+      
+      // Dynamic MAC Rotation logic
+      if (stealth.dynamicMacRotation && step.p > 5 && step.p < 100) {
+        const nextMac = generateMac();
+        setCurrentMac(nextMac);
+        addLog(`ROTATION: MAC Alterado para ${nextMac} (Evasão de Sessão)`);
+      }
+
       setScanProgress(step.p);
       addLog(step.m);
     }
@@ -167,16 +176,6 @@ Connection: close
           exploitationSteps: [`anaconda-rce -t ${target} --bypass-soc --mac ${generateMac()}`],
           exploitUrl: 'https://lolfake47.security/exploits/ssh-2026',
           mitigation: 'Implementar auditoria de memória em tempo real e isolar kernels SSH.'
-        },
-        {
-          id: 'LF47-Z02',
-          name: 'Advanced PostgreSQL Credential Leak',
-          severity: Severity.HIGH,
-          description: 'Vazamento de metadados de sessão em versões 2025/2026 sob carga alta.',
-          exploitTheory: 'Abuso de concorrência em triggers de auditoria para ler buffers de memória cruzada.',
-          exploitationSteps: [`pg_leak -h ${target} --stealth --timing T1`],
-          exploitUrl: 'https://exploit-db.com/lolfake47/pg-leak',
-          mitigation: 'Atualizar driver de auditoria e desativar triggers legados.'
         }
       ]
     };
@@ -245,7 +244,7 @@ Connection: close
         {activeTab === 'RECON' && (
           <>
             <div className="w-80 flex flex-col gap-4 relative z-10">
-              <section className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
+              <section className="bg-[#0f0f0f]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl overflow-y-auto scrollbar-hide">
                 <h3 className="text-[10px] font-black text-indigo-400 mb-6 flex items-center gap-2 tracking-widest uppercase">
                   <User className="w-4 h-4" /> Operator: Lolfake47
                 </h3>
@@ -282,7 +281,8 @@ Connection: close
                   <div className="space-y-2">
                     <label className="block text-[10px] text-zinc-600 font-bold uppercase mb-1 ml-1">Security Bypasses</label>
                     {[
-                      { key: 'macSpoofing', label: 'MAC Address Rotation', icon: Fingerprint },
+                      { key: 'macSpoofing', label: 'Static MAC Spoofing', icon: Fingerprint },
+                      { key: 'dynamicMacRotation', label: 'Dynamic MAC Rotation', icon: Orbit },
                       { key: 'traceObfuscation', label: 'Advanced Trace Wipe', icon: EyeOff },
                       { key: 'decoys', label: 'AI Honeypot Decoys', icon: Ghost }
                     ].map((opt) => (
@@ -307,7 +307,7 @@ Connection: close
                     className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all ${isScanning ? 'bg-zinc-800 text-zinc-500' : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_10px_30px_rgba(79,70,229,0.3)]'}`}
                   >
                     {isScanning ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                    {isScanning ? 'BYPASSING SOC...' : 'ENGAGE ANACONDA'}
+                    {isScanning ? 'EVADING SENTINEL...' : 'ENGAGE ANACONDA'}
                   </button>
                 </div>
               </section>
@@ -319,10 +319,10 @@ Connection: close
                 </div>
                 <div ref={logRef} className="flex-1 p-4 mono text-[10px] overflow-y-auto space-y-2 scrollbar-hide">
                   {logs.length === 0 ? (
-                    <div className="text-zinc-800 italic uppercase">Awaiting connection parameters...</div>
+                    <div className="text-zinc-800 italic uppercase text-center py-4">Awaiting connection...</div>
                   ) : logs.map((log, i) => (
                     <div key={i} className="flex gap-2 leading-relaxed border-l-2 border-indigo-500/20 pl-2">
-                      <span className={log.includes('ALERTA') ? 'text-red-500 font-bold' : log.includes('EVASION') ? 'text-indigo-400' : 'text-zinc-500'}>
+                      <span className={log.includes('ALERTA') ? 'text-red-500 font-bold' : log.includes('ROTATION') ? 'text-yellow-400 font-bold' : log.includes('EVASION') ? 'text-indigo-400' : 'text-zinc-500'}>
                         {log}
                       </span>
                     </div>
@@ -335,7 +335,7 @@ Connection: close
               {!results && !isScanning && (
                 <div className="h-full flex flex-col items-center justify-center text-center">
                   <div className="p-16 border border-white/5 rounded-[60px] bg-gradient-to-br from-[#0a0a0a] to-[#050505] shadow-2xl">
-                    <Zap className="w-40 h-40 text-indigo-600 opacity-20 mb-8 mx-auto" />
+                    <Orbit className="w-40 h-40 text-indigo-600 opacity-20 mb-8 mx-auto animate-pulse" />
                     <h2 className="text-5xl font-black mb-4 uppercase tracking-tighter text-white">READY TO ENGAGE</h2>
                     <p className="max-w-md text-sm mono text-zinc-600 leading-relaxed uppercase">Anaconda OS v4.5 Optimized for 2026 Evasion Strategies. Toolset by Lolfake47.</p>
                   </div>
@@ -348,8 +348,12 @@ Connection: close
                     <div className="w-48 h-48 rounded-full border-[1px] border-indigo-600/10 border-t-indigo-500 animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center flex-col">
                       <span className="text-5xl font-black text-white">{scanProgress}%</span>
-                      <span className="text-[10px] text-indigo-400 mono font-black tracking-widest mt-2">ANACONDA_RECON</span>
+                      <span className="text-[10px] text-indigo-400 mono font-black tracking-widest mt-2 uppercase">Tracing Vulnerabilities</span>
                     </div>
+                  </div>
+                  <div className="text-center space-y-2">
+                    <p className="text-indigo-400 mono text-xs font-bold animate-pulse">CURRENT MAC: {currentMac}</p>
+                    <p className="text-zinc-600 mono text-[10px]">ROTATION_SHIELD: {stealth.dynamicMacRotation ? 'ACTIVE' : 'IDLE'}</p>
                   </div>
                 </div>
               )}
@@ -363,11 +367,11 @@ Connection: close
                       </div>
                       <div>
                         <span className="text-[10px] text-indigo-400 font-black block uppercase tracking-widest">Engagement: Success</span>
-                        <span className="text-sm font-bold text-white uppercase italic tracking-tight">Vulnerabilities found on {target} (Simulated 2026)</span>
+                        <span className="text-sm font-bold text-white uppercase italic tracking-tight">Enumeration result for {target}</span>
                       </div>
                     </div>
                     <div className="text-right px-6 border-l border-white/10">
-                      <span className="text-[9px] text-zinc-500 font-bold block uppercase tracking-widest">MAC Spoofed</span>
+                      <span className="text-[9px] text-zinc-500 font-bold block uppercase tracking-widest">Final MAC ID</span>
                       <span className="text-xs mono text-zinc-300">{currentMac}</span>
                     </div>
                   </div>
@@ -409,7 +413,7 @@ Connection: close
                     <div className="flex items-center justify-between mb-16">
                       <div>
                         <h3 className="text-4xl font-black text-white mb-2 uppercase italic tracking-tighter">LOLFAKE47_AI ENGINE</h3>
-                        <p className="text-xs text-indigo-400 mono font-black tracking-[0.5em] uppercase">Attribution Defense & Exploit Logic (2026-02-13)</p>
+                        <p className="text-xs text-indigo-400 mono font-black tracking-[0.5em] uppercase">Attribution Defense Analysis (2026-02-13)</p>
                       </div>
                       <div className="bg-indigo-600 p-5 rounded-[24px] shadow-[0_0_60px_rgba(79,70,229,0.4)] border border-indigo-400/50">
                         <Cpu className="w-12 h-12 text-white" />
@@ -419,7 +423,7 @@ Connection: close
                     {isAnalyzing ? (
                       <div className="py-24 flex flex-col items-center justify-center gap-6">
                         <RefreshCw className="w-12 h-12 text-indigo-500 animate-spin" />
-                        <span className="text-xs text-indigo-400 mono animate-pulse font-black tracking-[0.3em] uppercase">Simulating Exploit attribution...</span>
+                        <span className="text-xs text-indigo-400 mono animate-pulse font-black tracking-[0.3em] uppercase">Correlating trace metadata...</span>
                       </div>
                     ) : analysis ? (
                       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -468,7 +472,7 @@ Connection: close
                               </div>
                             </div>
                             <span className="text-[11px] mono text-indigo-400 font-black uppercase tracking-[0.3em]">
-                              {analysis.traceRisk < 15 ? "GHOST_OPERATOR_ACTIVE" : "HIGH_RISK_OF_DETECTION"}
+                              {analysis.traceRisk < 15 ? "ANONYMITY_SHIELD_V4" : "REVEAL_RISK_DETECTED"}
                             </span>
                           </div>
 
@@ -493,7 +497,6 @@ Connection: close
           </>
         )}
 
-        {/* Tab contents (REPEATER & DECODER) updated with Lolfake47 style */}
         {activeTab === 'REPEATER' && (
           <div className="flex-1 flex gap-4 animate-in fade-in duration-500 pr-2 relative z-10">
             <div className="flex-1 flex flex-col gap-4">
@@ -589,6 +592,7 @@ Connection: close
         <div className="flex gap-10 items-center uppercase tracking-[0.2em]">
           <span className="flex items-center gap-2.5 text-green-600"><ShieldCheck className="w-3.5 h-3.5" /> ENCRYPTED_LINK: ACTIVE</span>
           <span className="flex items-center gap-2.5"><Fingerprint className="w-3.5 h-3.5 text-indigo-500" /> HW_SPOOF: {stealth.macSpoofing ? 'ENGAGED' : 'OFF'}</span>
+          <span className="flex items-center gap-2.5"><Orbit className="w-3.5 h-3.5 text-indigo-500" /> DYNAMIC_ROT: {stealth.dynamicMacRotation ? 'ON' : 'OFF'}</span>
           <span className="flex items-center gap-2.5"><EyeOff className="w-3.5 h-3.5 text-indigo-500" /> TRACE_WIPE: {stealth.traceObfuscation ? 'ENGAGED' : 'OFF'}</span>
           <span className="flex items-center gap-2.5"><User className="w-3.5 h-3.5 text-indigo-500" /> OPERATOR: LOLFAKE47</span>
         </div>
