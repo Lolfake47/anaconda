@@ -8,7 +8,7 @@ Se queres instalar esta ferramenta no teu Kali Linux a partir do GitHub, executa
 
 ```bash
 # 1. Clonar o repositório
-git clone https://github.com/TEU_UTILIZADOR/anaconda-red-suite.git
+git clone https://github.com/Lolfake47/anaconda-red-suite.git
 
 # 2. Entrar na pasta
 cd anaconda-red-suite
