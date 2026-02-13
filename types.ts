@@ -12,6 +12,13 @@ export enum Severity {
   CRITICAL = 'CRITICAL'
 }
 
+export interface StealthSettings {
+  timing: 'T0' | 'T1' | 'T2' | 'T3' | 'T4' | 'T5';
+  fragmentation: boolean;
+  decoys: boolean;
+  sourcePortSpoofing: boolean;
+}
+
 export interface DiscoveredDirectory {
   path: string;
   status: number;
@@ -27,6 +34,7 @@ export interface ScanResult {
   services: Record<number, string>;
   vulnerabilities: Vulnerability[];
   directories: DiscoveredDirectory[];
+  stealthUsed: StealthSettings;
 }
 
 export interface Vulnerability {
